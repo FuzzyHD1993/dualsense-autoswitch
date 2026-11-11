@@ -88,6 +88,11 @@ dualsense-toggle        # on:  re-apply the per-game profile
 Bind it to a key — the marker file is `~/.config/dualsense/disabled`.
 While disabled the daemon applies `default` once and stays out of the way.
 
+## Panel widget
+
+[dualsense-tray](https://github.com/FuzzyHD1993/dualsense-tray) puts a gamepad
+icon into the COSMIC status area; one click toggles the profiles.
+
 ## Override
 
 ```bash
