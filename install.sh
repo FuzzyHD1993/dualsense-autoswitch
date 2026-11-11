@@ -8,6 +8,7 @@ command -v go >/dev/null || { echo "нужен Go 1.21+"; exit 1; }
 echo "==> сборка"
 CGO_ENABLED=0 go build -trimpath -ldflags "-s -w" -o dualsense-autoswitch .
 install -Dm755 dualsense-autoswitch "$HOME/.local/bin/dualsense-autoswitch"
+install -Dm755 dualsense-toggle "$HOME/.local/bin/dualsense-toggle"
 
 echo "==> конфиг"
 mkdir -p "$HOME/.config/dualsense"

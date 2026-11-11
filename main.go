@@ -26,8 +26,10 @@ var (
 	home     string
 	confPath string
 	overPath string
+	offPath  string
 	binDir   string
 	interval time.Duration
+	reapply  time.Duration
 )
 
 func logf(format string, a ...any) {
@@ -58,6 +60,11 @@ func loadRules() []rule {
 		rules = append(rules, rule{pattern: pat, profile: prof})
 	}
 	return rules
+}
+
+func profilesDisabled() bool {
+	_, err := os.Stat(offPath)
+	return err == nil
 }
 
 func readOverride() string {
@@ -161,8 +168,16 @@ func main() {
 
 	confPath = envOr("DS_CONF", filepath.Join(home, ".config/dualsense/profiles.conf"))
 	overPath = envOr("DS_OVERRIDE", filepath.Join(home, ".config/dualsense/override"))
+	offPath = envOr("DS_OFF", filepath.Join(home, ".config/dualsense/disabled"))
 	binDir = envOr("DS_BIN", filepath.Join(home, ".local/bin"))
 	interval = 2 * time.Second
+	reapply = 5 * time.Second
+	if v := os.Getenv("DS_REAPPLY_SEC"); v != "" {
+		var sec int
+		if _, err := fmt.Sscanf(v, "%d", &sec); err == nil && sec >= 0 {
+			reapply = time.Duration(sec) * time.Second
+		}
+	}
 	if v := os.Getenv("DS_INTERVAL_MS"); v != "" {
 		var ms int
 		if _, err := fmt.Sscanf(v, "%d", &ms); err == nil && ms >= 200 {
@@ -178,6 +193,9 @@ func main() {
 		current = o
 	}
 
+	if profilesDisabled() {
+		current = "__off__"
+	}
 	if *once {
 		fmt.Println(current)
 		return
@@ -199,6 +217,7 @@ func main() {
 	defer ticker.Stop()
 
 	lastController := controllerPresent()
+	lastApply := time.Now()
 
 	for {
 		select {
@@ -223,6 +242,19 @@ func main() {
 		}
 		lastController = present
 
+		if profilesDisabled() {
+			if current != "__off__" {
+				current = "__off__"
+				_ = apply("default")
+				logf("профили ОТКЛЮЧЕНЫ — управление у игры")
+			}
+			continue
+		}
+		if current == "__off__" {
+			current = ""
+			logf("профили ВКЛЮЧЕНЫ")
+		}
+
 		names = processNames()
 		matched := matchProfile(rules, names)
 		if o := readOverride(); o != "" {
@@ -233,7 +265,13 @@ func main() {
 			if err := apply(current); err != nil {
 				logf("profile=%s: %v", current, err)
 			} else {
+				lastApply = time.Now()
 				logf("profile=%s применён", current)
+			}
+		} else if matched != "default" && reapply > 0 && time.Since(lastApply) >= reapply && present {
+			// игра может сбрасывать эффекты — тихо возвращаем свои
+			if err := apply(current); err == nil {
+				lastApply = time.Now()
 			}
 		} else if *verbose {
 			logf("profile=%s (без изменений)", current)

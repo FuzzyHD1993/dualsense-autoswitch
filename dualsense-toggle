@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# Тумблер профилей DualSense.
+#   выкл → наши эффекты снимаются, управление забирает игра
+#   вкл  → профиль по запущенной игре применяется снова
+set -u
+
+OFF="$HOME/.config/dualsense/disabled"
+BIN="$HOME/.local/bin"
+
+if [ -e "$OFF" ]; then
+    rm -f "$OFF"
+    prof=$("$BIN/dualsense-autoswitch" -once 2>/dev/null)
+    case "$prof" in
+        ""|__off__|default) ;;
+        *) "$BIN/dualsense-profile-$prof" >/dev/null 2>&1 || true ;;
+    esac
+    notify-send -a "DualSense" "Профили ВКЛЮЧЕНЫ" "Наши эффекты курков снова активны" 2>/dev/null || true
+    echo "on"
+else
+    mkdir -p "$(dirname "$OFF")"
+    : > "$OFF"
+    "$BIN/dualsense-profile-default" >/dev/null 2>&1 || true
+    notify-send -a "DualSense" "Профили ОТКЛЮЧЕНЫ" "Управление у игры" 2>/dev/null || true
+    echo "off"
+fi

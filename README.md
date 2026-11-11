@@ -75,6 +75,19 @@ It uses every DualSense trigger mode, so profiles actually feel different:
 | `vibration` | buzz under your finger while held |
 | `vibration-raw` | buzz shaped by trigger depth |
 
+## Toggle
+
+Some games (Crimson Desert) drive the triggers themselves through SteamInput
+and reset external effects. Instead of fighting them, flip the switch:
+
+```bash
+dualsense-toggle        # off: release the controller to the game
+dualsense-toggle        # on:  re-apply the per-game profile
+```
+
+Bind it to a key — the marker file is `~/.config/dualsense/disabled`.
+While disabled the daemon applies `default` once and stays out of the way.
+
 ## Override
 
 ```bash
