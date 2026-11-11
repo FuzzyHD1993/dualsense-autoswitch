@@ -60,7 +60,7 @@ case "$variant" in
   cd)
       apply feedback 0 8
       left  vibration 2 3 15
-      dualsensectl lightbar 200 20 30 120 ;;
+      dualsensectl lightbar off ;;
 
   # --- Euro Truck: педаль газа + твёрдый тормоз ---
   ets2)
