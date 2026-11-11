@@ -26,7 +26,7 @@ every 2s:
 ## Install
 
 ```bash
-git clone https://github.com/<you>/dualsense-autoswitch
+git clone https://github.com/FuzzyHD1993/dualsense-autoswitch
 cd dualsense-autoswitch
 ./install.sh
 ```
