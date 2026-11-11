@@ -59,7 +59,7 @@ case "$variant" in
   # --- Crimson Desert: вес меча + блок с вибрацией ---
   cd)
       apply slope_feedback 1 8 7
-      left  vibration 1 7 30
+      left  vibration 2 3 15
       dualsensectl lightbar 200 20 30 120 ;;
 
   # --- Euro Truck: педаль газа + твёрдый тормоз ---
