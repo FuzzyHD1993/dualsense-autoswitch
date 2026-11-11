@@ -58,7 +58,7 @@ case "$variant" in
 
   # --- Crimson Desert: вес меча + блок с вибрацией ---
   cd)
-      apply slope_feedback 1 8 7
+      apply slope_feedback 0 8 8
       left  vibration 2 3 15
       dualsensectl lightbar 200 20 30 120 ;;
 
